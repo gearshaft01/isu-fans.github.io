@@ -1,645 +1,351 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Scout Craft — World Jamboree 2027</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<title>ISU Fans Hub FINAL MAX ULTRA</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    :root {
-      --scout-purple: #4B2E83;
-      --scout-gold:   #FFB81C;
-      --grass:        #4CAA2C;
-      --dark-grass:   #357A1C;
-      --dirt:         #8B5E3C;
-      --sky-top:      #1a3a5c;
-      --sky-mid:      #1d5c8a;
-      --sky-low:      #2980b9;
-      --diamond:      #5CF6FF;
-      --night:        #0d1b2a;
-      --stone:        #6e6e6e;
-      --white:        #f0f0f0;
-    }
+<style>
+body { margin:0; font-family:'Segoe UI'; background:linear-gradient(135deg,#e0f7fa,#fce4ec); }
+header { background:#0a3d62; color:white; padding:20px; text-align:center; }
+nav { display:flex; flex-wrap:wrap; justify-content:center; background:#1e3799; }
+nav a { color:white; padding:12px; cursor:pointer; }
 
-    html { scroll-behavior: smooth; }
+.section { display:none; padding:20px; }
+.active { display:block; }
 
-    body {
-      font-family: 'Nunito', sans-serif;
-      background-color: var(--night);
-      color: var(--white);
-      overflow-x: hidden;
-    }
+.game-box { background:white; padding:20px; border-radius:12px; text-align:center; }
 
-    /* ─── STARS ─── */
-    .stars {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-    .star {
-      position: absolute;
-      background: #fff;
-      border-radius: 50%;
-      animation: twinkle var(--d, 3s) ease-in-out infinite;
-      opacity: 0;
-    }
-    @keyframes twinkle {
-      0%, 100% { opacity: 0; }
-      50% { opacity: var(--o, 0.8); }
-    }
+button { padding:8px 12px; margin:6px; border:none; border-radius:8px; cursor:pointer; }
 
-    /* ─── HERO ─── */
-    .hero {
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      overflow: hidden;
-      z-index: 1;
-    }
+/* ANIMATIONS */
+@keyframes correctPop {
+0% { transform: scale(1); }
+50% { transform: scale(1.2); }
+100% { transform: scale(1); }
+}
 
-    .sky-gradient {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 50%, var(--sky-low) 80%, #1a4a1a 100%);
-      z-index: 0;
-    }
+@keyframes wrongShake {
+0% { transform: translateX(0); }
+25% { transform: translateX(-6px); }
+50% { transform: translateX(6px); }
+75% { transform: translateX(-6px); }
+100% { transform: translateX(0); }
+}
 
-    .moon {
-      position: absolute;
-      top: 8%;
-      right: 12%;
-      width: 64px;
-      height: 64px;
-      background: #fffde0;
-      box-shadow: 0 0 30px 10px rgba(255,253,200,0.3);
-      z-index: 1;
-      clip-path: polygon(0% 25%, 25% 0%, 75% 0%, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0% 75%);
-    }
+.correct-anim {
+background:#2ed573 !important;
+color:white;
+animation: correctPop 0.4s ease;
+box-shadow:0 0 15px #2ed573;
+}
 
-    .clouds {
-      position: absolute;
-      top: 15%;
-      left: 0; right: 0;
-      z-index: 1;
-      pointer-events: none;
-    }
-    .cloud {
-      position: absolute;
-      background: rgba(255,255,255,0.10);
-    }
-    .cloud-1 { width: 120px; height: 32px; top: 0; left: 8%; }
-    .cloud-1::before { content:''; position:absolute; top:-16px; left:20px; width:80px; height:24px; background:rgba(255,255,255,0.10); }
-    .cloud-2 { width: 96px; height: 24px; top: 60px; left: 55%; }
-    .cloud-2::before { content:''; position:absolute; top:-12px; left:16px; width:64px; height:20px; background:rgba(255,255,255,0.10); }
-    .cloud-3 { width: 80px; height: 24px; top: 20px; right: 20%; }
+.wrong-anim {
+background:#ff4757 !important;
+color:white;
+animation: wrongShake 0.4s ease;
+box-shadow:0 0 15px #ff4757;
+}
 
-    .treeline {
-      position: absolute;
-      bottom: 0;
-      left: 0; right: 0;
-      height: 220px;
-      z-index: 2;
-      overflow: hidden;
-    }
-    .treeline svg {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 220px;
-    }
+/* COMBO */
+.combo {
+position:fixed;
+top:25%;
+left:50%;
+transform:translateX(-50%);
+font-size:42px;
+color:#ff6b81;
+animation: popFade 0.7s ease;
+pointer-events:none;
+}
 
-    .ground {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      z-index: 3;
-    }
-    .ground-grass {
-      height: 28px;
-      background: var(--grass);
-      border-top: 4px solid var(--dark-grass);
-    }
-    .ground-dirt {
-      height: 18px;
-      background: var(--dirt);
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 10;
-      padding: 2rem;
-      margin-bottom: 80px;
-    }
-
-    .fleur-de-lis {
-      font-size: 3rem;
-      margin-bottom: 0.5rem;
-      filter: drop-shadow(0 0 12px var(--scout-gold));
-      animation: float 3s ease-in-out infinite;
-      display: block;
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(-8px); }
-    }
-
-    .hero-badge {
-      display: inline-block;
-      background: var(--scout-gold);
-      color: var(--scout-purple);
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.55rem;
-      padding: 6px 14px;
-      letter-spacing: 1px;
-      margin-bottom: 1.2rem;
-      border: 3px solid rgba(255,255,255,0.2);
-    }
-
-    .hero h1 {
-      font-family: 'Press Start 2P', monospace;
-      font-size: clamp(1.2rem, 4vw, 2.2rem);
-      line-height: 1.5;
-      color: #fff;
-      text-shadow: 4px 4px 0 var(--scout-purple), 0 0 30px rgba(91,246,255,0.3);
-      margin-bottom: 0.6rem;
-    }
-    .hero h1 span {
-      color: var(--scout-gold);
-      text-shadow: 4px 4px 0 #8a5e00, 0 0 20px rgba(255,184,28,0.5);
-    }
-
-    .hero-sub {
-      font-size: 1.05rem;
-      color: rgba(255,255,255,0.75);
-      font-weight: 600;
-      margin-bottom: 2rem;
-      letter-spacing: 0.5px;
-    }
-
-    .hero-btns {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.6rem;
-      padding: 14px 22px;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      transition: transform 0.1s, box-shadow 0.1s;
-      letter-spacing: 0.5px;
-    }
-    .btn:active { transform: translateY(3px) !important; }
-
-    .btn-discord {
-      background: #5865F2;
-      color: #fff;
-      box-shadow: 0 6px 0 #3b45b5;
-    }
-    .btn-discord:hover { transform: translateY(-3px); box-shadow: 0 9px 0 #3b45b5; }
-
-    .btn-scout {
-      background: var(--scout-gold);
-      color: var(--scout-purple);
-      box-shadow: 0 6px 0 #a57800;
-    }
-    .btn-scout:hover { transform: translateY(-3px); box-shadow: 0 9px 0 #a57800; }
-
-    .scroll-hint {
-      position: absolute;
-      bottom: 90px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.4rem;
-      color: rgba(255,255,255,0.4);
-      letter-spacing: 1px;
-      animation: bounce 2s ease-in-out infinite;
-    }
-    .scroll-hint::after { content: ' ▼'; }
-    @keyframes bounce {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50%       { transform: translateX(-50%) translateY(6px); }
-    }
-
-    /* ─── SECTIONS ─── */
-    section { position: relative; z-index: 5; }
-
-    /* ─── ABOUT ─── */
-    .about {
-      background: #0d1b2a;
-      padding: 5rem 2rem;
-      text-align: center;
-    }
-
-    .section-label {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.5rem;
-      color: var(--scout-gold);
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-      opacity: 0.8;
-    }
-
-    .section-title {
-      font-family: 'Press Start 2P', monospace;
-      font-size: clamp(0.9rem, 2.5vw, 1.4rem);
-      color: #fff;
-      margin-bottom: 2rem;
-      line-height: 1.6;
-    }
-    .section-title span { color: var(--diamond); }
-
-    .about-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      max-width: 900px;
-      margin: 3rem auto 0;
-    }
-
-    .about-card {
-      background: #16293d;
-      border: 3px solid #1e3a54;
-      border-bottom: 5px solid #0a1520;
-      padding: 2rem 1.5rem;
-      text-align: center;
-      transition: transform 0.15s, border-color 0.15s;
-    }
-    .about-card:hover { transform: translateY(-5px); border-color: var(--scout-gold); }
-    .about-card .icon { font-size: 2.4rem; margin-bottom: 1rem; display: block; }
-    .about-card h3 {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.6rem;
-      color: var(--scout-gold);
-      margin-bottom: 0.8rem;
-      line-height: 1.6;
-    }
-    .about-card p { font-size: 0.9rem; color: rgba(255,255,255,0.7); line-height: 1.6; }
-
-    /* ─── COMMUNITY ─── */
-    .community {
-      background: #111f30;
-      padding: 5rem 2rem;
-    }
-    .community-inner {
-      max-width: 1000px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: center;
-    }
-    @media (max-width: 700px) {
-      .community-inner { grid-template-columns: 1fr; gap: 2rem; }
-    }
-
-    .community-text .section-title { text-align: left; }
-    .community-text .section-label { text-align: left; }
-    .community-text p { font-size: 1rem; color: rgba(255,255,255,0.7); line-height: 1.8; margin-bottom: 1rem; }
-
-    .stat-row { display: flex; gap: 2rem; margin-top: 2rem; }
-    .stat { text-align: center; }
-    .stat .num {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 1.6rem;
-      color: var(--scout-gold);
-      display: block;
-      text-shadow: 3px 3px 0 #7a5a00;
-    }
-    .stat .lbl { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem; }
-
-    .discord-widget-wrap { display: flex; justify-content: center; }
-    .discord-widget-wrap iframe {
-      border: 4px solid #5865F2;
-      box-shadow: 0 8px 0 #3b45b5, 0 16px 40px rgba(88,101,242,0.3);
-      max-width: 100%;
-    }
-
-    /* ─── EVENTS ─── */
-    .events {
-      background: #0d1b2a;
-      padding: 5rem 2rem;
-      text-align: center;
-    }
-    .events-inner { max-width: 800px; margin: 0 auto; }
-    .event-list { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1rem; }
-
-    .event-card {
-      background: #16293d;
-      border-left: 6px solid var(--scout-gold);
-      padding: 1.3rem 1.5rem;
-      text-align: left;
-      display: flex;
-      align-items: center;
-      gap: 1.2rem;
-      transition: background 0.2s;
-    }
-    .event-card:hover { background: #1e3a54; }
-    .event-icon { font-size: 2rem; flex-shrink: 0; }
-    .event-info h4 {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.55rem;
-      color: var(--scout-gold);
-      margin-bottom: 0.5rem;
-      line-height: 1.6;
-    }
-    .event-info p { font-size: 0.88rem; color: rgba(255,255,255,0.65); }
-
-    .event-tag {
-      margin-left: auto;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.4rem;
-      padding: 4px 8px;
-      flex-shrink: 0;
-      color: #fff;
-    }
-    .tag-soon { background: var(--grass); }
-    .tag-tbd  { background: var(--stone); }
-
-    /* ─── FOOTER ─── */
-    footer {
-      background: #07101a;
-      border-top: 4px solid #1e3a54;
-      padding: 3rem 2rem;
-      text-align: center;
-    }
-    .footer-logo {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.75rem;
-      color: var(--scout-gold);
-      margin-bottom: 0.8rem;
-    }
-    footer p { font-size: 0.85rem; color: rgba(255,255,255,0.35); line-height: 1.8; }
-    footer a { color: var(--diamond); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-
-    .pixel-hr {
-      display: block;
-      height: 4px;
-      background: repeating-linear-gradient(90deg, var(--scout-gold) 0px, var(--scout-gold) 16px, transparent 16px, transparent 32px);
-      opacity: 0.25;
-    }
-
-    .fade-in {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-    .fade-in.visible { opacity: 1; transform: translateY(0); }
-  </style>
+@keyframes popFade{
+0%{opacity:0; transform:translate(-50%,20px) scale(0.5);}
+50%{opacity:1; transform:translate(-50%,0) scale(1.3);}
+100%{opacity:0; transform:translate(-50%,-20px) scale(1);}
+}
+</style>
 </head>
+
 <body>
 
-  <div class="stars" id="stars"></div>
+<header><h1>⛸️ ISU Fans Hub FINAL MAX ULTRA</h1></header>
 
-  <!-- ═══ HERO ═══ -->
-  <section class="hero">
-    <div class="sky-gradient"></div>
-    <div class="moon"></div>
-    <div class="clouds">
-      <div class="cloud cloud-1"></div>
-      <div class="cloud cloud-2"></div>
-      <div class="cloud cloud-3"></div>
-    </div>
+<nav>
+<a onclick="show('easy')">Easy</a>
+<a onclick="show('hard')">Hard</a>
+<a onclick="show('country')">Country</a>
+<a onclick="show('timer')">Timer</a>
+<a onclick="show('wordle')">Wordle</a>
+<a onclick="show('leader')">Leaderboard</a>
+</nav>
 
-    <div class="hero-content">
-      <span class="fleur-de-lis">⚜️</span>
-      <div class="hero-badge">World Scout Jamboree 2027</div>
-      <h1>Scout<span>Craft</span></h1>
-      <p class="hero-sub">A Minecraft community built around the Scouting spirit</p>
-      <div class="hero-btns">
-        <a href="#community" class="btn btn-discord">Join Discord</a>
-        <a href="#about" class="btn btn-scout">Learn More</a>
-      </div>
-    </div>
+<div id="easy" class="section active">
+<div class="game-box">
+<h2>Easy</h2>
+<p id="eScore"></p>
+<h3 id="eQ"></h3>
+<div id="eChoices"></div>
+</div>
+</div>
 
-    <div class="scroll-hint">scroll down</div>
+<div id="hard" class="section">
+<div class="game-box">
+<h2>Hard (+2)</h2>
+<p id="hScore"></p>
+<input id="hInput">
+<button onclick="checkHard()">Guess</button>
+</div>
+</div>
 
-    <div class="treeline">
-      <svg viewBox="0 0 1440 220" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <g fill="#1f5e1a" opacity="0.6">
-          <rect x="40"  y="120" width="24" height="100"/>
-          <polygon points="28,120 52,120 40,60"/>
-          <polygon points="24,95 56,95 40,40"/>
-          <rect x="180" y="130" width="20" height="90"/>
-          <polygon points="170,130 190,130 180,75"/>
-          <polygon points="166,108 194,108 180,55"/>
-          <rect x="360" y="115" width="22" height="105"/>
-          <polygon points="349,115 371,115 360,58"/>
-          <polygon points="345,92 375,92 360,38"/>
-          <rect x="600" y="125" width="20" height="95"/>
-          <polygon points="590,125 610,125 600,70"/>
-          <polygon points="586,103 614,103 600,50"/>
-          <rect x="850" y="118" width="24" height="102"/>
-          <polygon points="838,118 862,118 850,60"/>
-          <polygon points="834,95 866,95 850,40"/>
-          <rect x="1100" y="122" width="22" height="98"/>
-          <polygon points="1089,122 1111,122 1100,65"/>
-          <polygon points="1085,100 1115,100 1100,45"/>
-          <rect x="1320" y="128" width="20" height="92"/>
-          <polygon points="1310,128 1330,128 1320,72"/>
-          <polygon points="1306,106 1334,106 1320,52"/>
-        </g>
-        <g fill="#357A1C">
-          <rect x="0"   y="140" width="28" height="80"/>
-          <polygon points="-14,140 14,140 0,80"/>
-          <polygon points="-18,115 18,115 0,58"/>
-          <rect x="110" y="145" width="24" height="75"/>
-          <polygon points="98,145 122,145 110,88"/>
-          <polygon points="94,120 126,120 110,62"/>
-          <rect x="260" y="138" width="28" height="82"/>
-          <polygon points="246,138 274,138 260,78"/>
-          <polygon points="242,113 278,113 260,56"/>
-          <rect x="440" y="142" width="26" height="78"/>
-          <polygon points="427,142 453,142 440,82"/>
-          <polygon points="423,117 457,117 440,60"/>
-          <rect x="650" y="136" width="30" height="84"/>
-          <polygon points="635,136 665,136 650,74"/>
-          <polygon points="631,110 669,110 650,52"/>
-          <rect x="780" y="148" width="22" height="72"/>
-          <polygon points="769,148 791,148 780,90"/>
-          <polygon points="765,124 795,124 780,66"/>
-          <rect x="950" y="140" width="28" height="80"/>
-          <polygon points="936,140 964,140 950,80"/>
-          <polygon points="932,115 968,115 950,58"/>
-          <rect x="1150" y="144" width="26" height="76"/>
-          <polygon points="1137,144 1163,144 1150,84"/>
-          <polygon points="1133,120 1167,120 1150,62"/>
-          <rect x="1380" y="142" width="28" height="78"/>
-          <polygon points="1366,142 1394,142 1380,82"/>
-          <polygon points="1362,117 1398,117 1380,60"/>
-        </g>
-        <rect x="0" y="196" width="1440" height="24" fill="#4CAA2C"/>
-        <rect x="0" y="210" width="1440" height="10" fill="#357A1C"/>
-      </svg>
-    </div>
+<div id="country" class="section">
+<div class="game-box">
+<h2>Country</h2>
+<p id="cScore"></p>
+<h3 id="cQ"></h3>
+<div id="cChoices"></div>
+</div>
+</div>
 
-    <div class="ground">
-      <div class="ground-grass"></div>
-      <div class="ground-dirt"></div>
-    </div>
-  </section>
+<div id="timer" class="section">
+<div class="game-box">
+<h2>Timer</h2>
+<p id="tScore"></p>
+<p id="tTime"></p>
+<h3 id="tQ"></h3>
+<div id="tChoices"></div>
+<button onclick="startTimer()">Start</button>
+</div>
+</div>
 
-  <!-- ═══ ABOUT ═══ -->
-  <section class="about" id="about">
-    <div class="section-label">What is this?</div>
-    <h2 class="section-title fade-in">Where <span>Scouts meet Blocks</span></h2>
-    <p style="max-width:560px;margin:0 auto;font-size:1rem;color:rgba(255,255,255,0.65);line-height:1.8;" class="fade-in">
-      ScoutCraft is a small, friendly Minecraft server built by Scouts, for Scouts — celebrating the spirit of the World Scout Jamboree 2027. Whether you're building base camps or going on adventures, there's always something to do.
-    </p>
+<div id="wordle" class="section">
+<div class="game-box">
+<h2>Wordle Mode</h2>
+<p id="wHint"></p>
+<p id="wAttempts"></p>
+<input id="wInput">
+<button onclick="checkWordle()">Guess</button>
+<div id="wHistory"></div>
+</div>
+</div>
 
-    <div class="about-grid">
-      <div class="about-card fade-in">
-        <span class="icon">⚜️</span>
-        <h3>Scout Spirit</h3>
-        <p>Rooted in the values of scouting — teamwork, respect, and adventure — brought into the blocky world.</p>
-      </div>
-      <div class="about-card fade-in">
-        <span class="icon">🌍</span>
-        <h3>Jamboree 2027</h3>
-        <p>Themed around the World Scout Jamboree 2027, connecting Scouts across the globe through Minecraft.</p>
-      </div>
-      <div class="about-card fade-in">
-        <span class="icon">🤝</span>
-        <h3>Small & Friendly</h3>
-        <p>Close to 12 players in a tight-knit community. Everyone knows everyone — no strangers here.</p>
-      </div>
-      <div class="about-card fade-in">
-        <span class="icon">🎉</span>
-        <h3>Occasional Events</h3>
-        <p>From build contests to group expeditions, we run events to keep things fun and bring the crew together.</p>
-      </div>
-    </div>
-  </section>
+<div id="leader" class="section">
+<h2>Leaderboard</h2>
+<div id="leaderList"></div>
+</div>
 
-  <span class="pixel-hr"></span>
+<script>
 
-  <!-- ═══ COMMUNITY / DISCORD ═══ -->
-  <section class="community" id="community">
-    <div class="community-inner">
-      <div class="community-text fade-in">
-        <div class="section-label">The Community</div>
-        <h2 class="section-title">Come <span>hang out</span> with us</h2>
-        <p>
-          We're self-hosted and proud of it — two friends running a server for a crew of Scouts who love Minecraft. It's casual, it's fun, and the door is always open.
-        </p>
-        <p>
-          Drop into the Discord to chat, coordinate events, or just share what you've been building. We're always around.
-        </p>
-        <div class="stat-row">
-          <div class="stat">
-            <span class="num">~12</span>
-            <div class="lbl">Members</div>
-          </div>
-          <div class="stat">
-            <span class="num">2027</span>
-            <div class="lbl">Jamboree Year</div>
-          </div>
-          <div class="stat">
-            <span class="num">∞</span>
-            <div class="lbl">Good Vibes</div>
-          </div>
-        </div>
-      </div>
-      <div class="discord-widget-wrap fade-in">
-        <iframe src="https://discord.com/widget?id=1478218749466382336&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
-      </div>
-    </div>
-  </section>
+/* NAV */
+function show(id){
+document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+}
 
-  <span class="pixel-hr"></span>
+/* SOUND */
+const sCorrect=new Audio("https://actions.google.com/sounds/v1/cartoon/clang.ogg");
+const sWrong=new Audio("https://actions.google.com/sounds/v1/cartoon/boing.ogg");
+const sCombo=new Audio("https://actions.google.com/sounds/v1/cartoon/concussive_hit_guitar_boing.ogg");
 
-  <!-- ═══ EVENTS ═══ -->
-  <section class="events" id="events">
-    <div class="events-inner">
-      <div class="section-label">What's happening</div>
-      <h2 class="section-title fade-in">Upcoming <span>Events</span></h2>
-      <div class="event-list">
-        <div class="event-card fade-in">
-          <div class="event-icon">🏕️</div>
-          <div class="event-info">
-            <h4>Base Camp Build-Off</h4>
-            <p>Build the best scout camp you can — judged by the community. Prizes for creativity!</p>
-          </div>
-          <div class="event-tag tag-soon">Soon</div>
-        </div>
-        <div class="event-card fade-in">
-          <div class="event-icon">🗺️</div>
-          <div class="event-info">
-            <h4>Expedition Night</h4>
-            <p>Group survival run — explore together, gather resources, and survive the night as a patrol.</p>
-          </div>
-          <div class="event-tag tag-soon">Soon</div>
-        </div>
-        <div class="event-card fade-in">
-          <div class="event-icon">🎆</div>
-          <div class="event-info">
-            <h4>Jamboree Countdown Event</h4>
-            <p>A special server-wide celebration as we count down to the World Scout Jamboree 2027.</p>
-          </div>
-          <div class="event-tag tag-tbd">TBD</div>
-        </div>
-      </div>
-      <p style="margin-top:2rem;font-size:0.85rem;color:rgba(255,255,255,0.4);">
-        Event dates are announced in Discord — join to stay in the loop!
-      </p>
-    </div>
-  </section>
+function play(s){s.currentTime=0;s.play();}
 
-  <!-- ═══ FOOTER ═══ -->
-  <footer>
-    <div class="footer-logo">⚜️ ScoutCraft</div>
-    <p>
-      A fan-made Minecraft community celebrating the <strong style="color:rgba(255,255,255,0.55)">World Scout Jamboree 2027</strong>.<br>
-      Self-hosted with love. Not affiliated with the World Organisation of the Scout Movement.<br><br>
-      <a href="https://discord.gg/" target="_blank">Join our Discord</a>
-    </p>
-  </footer>
+function showCombo(text){
+let d=document.createElement("div");
+d.className="combo";
+d.innerText=text;
+document.body.appendChild(d);
+setTimeout(()=>d.remove(),700);
+}
 
-  <script>
-    // Generate stars
-    const starsEl = document.getElementById('stars');
-    for (let i = 0; i < 120; i++) {
-      const s = document.createElement('div');
-      s.className = 'star';
-      const size = Math.random() * 2.5 + 0.5;
-      s.style.cssText = `
-        width:${size}px;height:${size}px;
-        top:${Math.random()*70}%;
-        left:${Math.random()*100}%;
-        --d:${(Math.random()*4+2).toFixed(1)}s;
-        --o:${(Math.random()*0.7+0.2).toFixed(2)};
-        animation-delay:${(Math.random()*5).toFixed(1)}s;
-      `;
-      starsEl.appendChild(s);
-    }
+/* DATA */
+const skaters=[["Ilia Malinin",333.81,"USA","S"],["Yuma Kagiyama",306.67,"Japan","S"],["Shun Sato",292.08,"Japan","S"],["Mikhail Shaidorov",291.58,"Kazakhstan","S"],["Daniel Grassl",288.72,"Italy","S"],["Stephen Gogolev",281.04,"Canada","S"],["Adam Siao Him Fa",280.95,"France","S"],["Junhwan Cha",273.92,"Korea","S"],["Kao Miura",273.73,"Japan","S"],["Nika Egadze",273.00,"Georgia","S"],["Petr Gumennik",271.21,"AIN","S"],["Aleksandr Selevko",270.42,"Estonia","S"],["Sota Yamamoto",270.07,"Japan","S"],["Kevin Aymoz",269.13,"France","S"],["Kazuki Tomono",268.60,"Japan","S"],["Rio Nakata",268.47,"Japan","J"],["Nikolaj Memola",265.37,"Italy","S"],["Andrew Torgashev",259.06,"USA","S"],["Boyang Jin",258.86,"China","S"],["Jason Brown",257.81,"USA","S"],["Matteo Rizzo",256.37,"Italy","S"],["Minkyu Seo",255.91,"Korea","J"],["Lukas Britschgi",251.90,"Switzerland","S"],["Tomoki Hiwatashi",245.71,"USA","S"],["Roman Sadovsky",243.29,"Canada","S"],["Sihyeong Lee",242.52,"Korea","S"],["Jacob Sanchez",241.74,"USA","S"],["Taiga Nishino",241.23,"Japan","J"],["Vladimir Samoilov",240.83,"Poland","S"],["Georgii Reshtenko",238.27,"Czech Republic","S"],["Kaori Sakamoto",238.28,"Japan","S"],["Mone Chiba",228.47,"Japan","S"],["Ami Nakai",227.08,"Japan","S"],["Alysa Liu",226.79,"USA","S"],["Mao Shimada",218.13,"Japan","J"],["Yuna Aoki",217.39,"Japan","S"],["Niina Petrokina",216.14,"Estonia","S"],["Rion Sumiyoshi",216.06,"Japan","S"],["Nina Pinzarrone",215.20,"Belgium","S"],["Amber Glenn",214.91,"USA","S"],["Adeliia Petrosian",214.53,"AIN","S"],["Isabeau Levito",212.71,"USA","S"],["Rinka Watanabe",210.96,"Japan","S"],["Haein Lee",210.56,"Korea","S"],["Anastasiia Gubanova",209.99,"Georgia","S"],["Jia Shin",208.45,"Korea","S"],["Sofia Samodelkina",207.46,"Kazakhstan","S"],["Hana Bath",205.39,"Australia","J"],["Lara Naki Gutmann",205.12,"Italy","S"],["Loena Hendrickx",204.96,"Belgium","S"],["Sarah Everhardt",199.91,"USA","S"],["Yujae Kim",199.86,"Korea","J"],["Bradie Tennell",199.37,"USA","S"],["Mayuko Oka",199.17,"Japan","J"],["Young You",198.82,"Korea","S"],["Yuseong Kim",198.66,"Korea","J"],["Saki Miyake",196.79,"Japan","S"],["Olivia Lisko",196.23,"Finland","S"],["Mei Okada",195.82,"Japan","J"],["Starr Andrews",195.28,"USA","S"]];
 
-    // Scroll fade-in
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((e, i) => {
-        if (e.isIntersecting) {
-          setTimeout(() => e.target.classList.add('visible'), i * 80);
-          observer.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.12 });
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-  </script>
+/* EASY */
+let eScore=0,eAns;
+function newEasy(){
+eAns=skaters[Math.random()*skaters.length|0];
+eQ.innerText="PB: "+eAns[1];
+let opts=[eAns];
+while(opts.length<4){
+let r=skaters[Math.random()*skaters.length|0];
+if(!opts.includes(r)) opts.push(r);
+}
+opts.sort(()=>Math.random()-0.5);
+eChoices.innerHTML="";
+opts.forEach(o=>{
+let b=document.createElement("button");
+b.innerText=o[0];
+b.onclick=()=>{
+if(o===eAns){
+b.classList.add("correct-anim");
+play(sCorrect); showCombo("🔥");
+eScore++;
+}else{
+b.classList.add("wrong-anim");
+play(sWrong);
+saveScore(eScore); eScore=0;
+}
+updateEasy();
+setTimeout(newEasy,500);
+};
+eChoices.appendChild(b);
+});
+}
+function updateEasy(){eScoreEl.innerText="Score: "+eScore;}
+
+/* HARD */
+let hAns,hScore=0;
+function newHard(){
+hAns=skaters[Math.random()*skaters.length|0];
+hScoreEl.innerText="PB: "+hAns[1]+" | Score: "+hScore;
+}
+function checkHard(){
+if(hAns[0].toLowerCase().includes(hInput.value.toLowerCase())){
+play(sCorrect); showCombo("💥"); hScore+=2;
+}else{
+play(sWrong); saveScore(hScore); hScore=0;
+}
+newHard();
+}
+
+/* COUNTRY */
+let cScore=0,cAns;
+function newCountry(){
+cAns=skaters[Math.random()*skaters.length|0];
+cQ.innerText=cAns[0];
+let countries=[...new Set(skaters.map(s=>s[2]))];
+let opts=[cAns[2]];
+while(opts.length<4){
+let r=countries[Math.random()*countries.length|0];
+if(!opts.includes(r)) opts.push(r);
+}
+opts.sort(()=>Math.random()-0.5);
+cChoices.innerHTML="";
+opts.forEach(o=>{
+let b=document.createElement("button");
+b.innerText=o;
+b.onclick=()=>{
+if(o===cAns[2]){
+b.classList.add("correct-anim");
+play(sCorrect); showCombo("🌍");
+cScore++;
+}else{
+b.classList.add("wrong-anim");
+play(sWrong);
+saveScore(cScore); cScore=0;
+}
+updateCountry();
+setTimeout(newCountry,500);
+};
+cChoices.appendChild(b);
+});
+}
+function updateCountry(){cScoreEl.innerText="Score: "+cScore;}
+
+/* TIMER */
+let tScore=0,tTime=30,tAns,intv;
+function startTimer(){
+tScore=0;tTime=30;
+clearInterval(intv);
+nextTimer();
+intv=setInterval(()=>{
+tTime--;
+tTimeEl.innerText="Time: "+tTime;
+if(tTime<=0){clearInterval(intv); saveScore(tScore);}
+},1000);
+}
+function nextTimer(){
+tAns=skaters[Math.random()*skaters.length|0];
+tQ.innerText="PB: "+tAns[1];
+let opts=[tAns];
+while(opts.length<4){
+let r=skaters[Math.random()*skaters.length|0];
+if(!opts.includes(r)) opts.push(r);
+}
+opts.sort(()=>Math.random()-0.5);
+tChoices.innerHTML="";
+opts.forEach(o=>{
+let b=document.createElement("button");
+b.innerText=o[0];
+b.onclick=()=>{
+if(o===tAns){
+play(sCorrect); showCombo("⚡");
+tScore++; nextTimer();
+}else{
+play(sWrong); tTime-=2;
+}
+updateTimer();
+};
+tChoices.appendChild(b);
+});
+}
+function updateTimer(){
+tScoreEl.innerText="Score: "+tScore;
+tTimeEl.innerText="Time: "+tTime;
+}
+
+/* WORDLE */
+let wAns,attempts;
+function newWordle(){
+wAns=skaters[Math.random()*skaters.length|0];
+attempts=0;
+wHistory.innerHTML="";
+updateHints();
+wAttempts.innerText="Attempts: 0 / 6";
+}
+function updateHints(){
+let hints=[];
+hints.push("Country: "+wAns[2]);
+hints.push("Level: "+wAns[3]);
+if(attempts>=1) hints.push("PB: "+wAns[1]);
+if(attempts>=2) hints.push("First Letter: "+wAns[0][0]);
+if(attempts>=3) hints.push("Last Letter: "+wAns[0].slice(-1));
+if(attempts>=4) hints.push("Name Length: "+wAns[0].length);
+if(attempts>=5) hints.push("First Name Length: "+wAns[0].split(" ")[0].length);
+wHint.innerHTML=hints.join("<br>");
+}
+function checkWordle(){
+let g=wInput.value.trim();
+if(!g)return;
+attempts++;
+let correct=g.toLowerCase()===wAns[0].toLowerCase();
+let d=document.createElement("div");
+d.innerText=(correct?"✅ ":"❌ ")+g;
+wHistory.appendChild(d);
+updateHints();
+wAttempts.innerText="Attempts: "+attempts+" / 6";
+
+if(correct){play(sCorrect); showCombo("🎯"); saveScore(10-attempts); newWordle();}
+else if(attempts>=6){play(sWrong); alert("Answer: "+wAns[0]); newWordle();}
+else play(sWrong);
+
+wInput.value="";
+}
+
+/* LEADERBOARD */
+function saveScore(s){
+let lb=JSON.parse(localStorage.getItem("lb")||"[]");
+lb.push(s);
+lb.sort((a,b)=>b-a);
+lb=lb.slice(0,10);
+localStorage.setItem("lb",JSON.stringify(lb));
+renderLB();
+}
+function renderLB(){
+let lb=JSON.parse(localStorage.getItem("lb")||"[]");
+leaderList.innerHTML=lb.map((x,i)=>`#${i+1} - ${x}`).join("<br>");
+}
+
+/* INIT */
+const eScoreEl=document.getElementById("eScore");
+const cScoreEl=document.getElementById("cScore");
+const tScoreEl=document.getElementById("tScore");
+const tTimeEl=document.getElementById("tTime");
+const hScoreEl=document.getElementById("hScore");
+
+newEasy();newCountry();newHard();newWordle();renderLB();
+
+</script>
+
 </body>
 </html>
